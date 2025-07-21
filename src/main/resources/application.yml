@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8082}  # 기본값 8081
+  port: ${SERVER_PORT:8082}
 
 spring:
   datasource:
@@ -20,3 +20,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
