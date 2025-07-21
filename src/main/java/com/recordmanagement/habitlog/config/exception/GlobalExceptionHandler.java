@@ -1,6 +1,8 @@
 package com.recordmanagement.habitlog.config.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +18,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * 전역 예외 처리 핸들러 (예상하지 못한 모든 예외)
+     *
+     * - 컨트롤러에서 처리되지 않은 예외가 발생할 경우 이 메서드에서 처리된다.
+     * - 서버 내부 오류(HTTP 500)를 클라이언트에 일관된 형태로 응답한다.
+     * - 로그에 요청 URI와 예외 내용을 기록하여 추후 디버깅에 활용할 수 있도록 한다.
+     *
+     * @param e       발생한 예외 객체
+     * @param request 현재 요청 객체 (요청 URI 확인용)
+     * @return        ErrorResponse (HTTP 500 + 에러 코드 및 메시지)
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        log.error("서버 내부 오류 발생 - 요청 URI: {}", uri, e);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
+    }
 
     /**
      * 비즈니스 예외 처리 핸들러
@@ -55,19 +78,5 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(ErrorCode.FORBIDDEN.getStatus())
                 .body(ErrorResponse.of(ErrorCode.FORBIDDEN));
-    }
-
-    /**
-     * 예상치 못한 서버 내부 예외 처리 핸들러
-     *
-     * @param ex Exception
-     * @return ErrorResponse
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex) {
-        log.error("서버 내부 오류 발생", ex);
-        return ResponseEntity
-                .internalServerError()
-                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
