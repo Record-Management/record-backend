@@ -43,5 +43,5 @@ Thumbs.db
 # 로그 파일
 *.log
 
-# yml
-src/main/resources/application.yml
+# 환경 변수 파일 무시
+.env
