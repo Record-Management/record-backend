@@ -3,7 +3,7 @@ services:
     build: .
     container_name: habitlog-app
     ports:
-      - "${SERVER_PORT:-8080}:8080"  # optional: 호스트 포트도 외부에서 지정 가능
+      - "${SERVER_PORT:-8081}:8081"  # optional: 호스트 포트도 외부에서 지정 가능
     depends_on:
       - db
     env_file:
