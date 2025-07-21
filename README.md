@@ -5,7 +5,7 @@
 
 ## 기술 스택
 - Java 17  
-- Spring Boot 3.2.1
+- Spring Boot 3.2.2
 - Spring Security + JWT 
 - Spring Data JPA  
 - MySQL  
