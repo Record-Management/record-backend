@@ -1,44 +1,73 @@
 package com.recordmanagement.habitlog.config.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * GlobalExceptionHandler - 전역 예외 처리 클래스
  *
- * 모든 컨트롤러에서 발생하는 예외를 하나의 클래스에서 통합 처리한다.
+ * 컨트롤러에서 발생하는 모든 예외를 한 곳에서 처리하여
+ * 일관된 에러 응답을 제공하고 서버 로그를 기록한다.
  */
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * 커스텀 예외 처리 핸들러
-     *
-     * CustomException 발생 시 클라이언트에 에러 메시지와 상태 코드를 전달한다.
+     * 비즈니스 예외 처리 핸들러
      *
      * @param ex CustomException
-     * @return ResponseEntity<ErrorResponse>
+     * @return ErrorResponse
      */
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustom(CustomException ex) {
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(ErrorResponse.of(ex.getStatus(), ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
+        ErrorCode code = ex.getErrorCode();
+        log.warn("비즈니스 예외 발생: {}", code.getMessage());
+        return ResponseEntity.status(code.getStatus()).body(ErrorResponse.of(code));
     }
 
     /**
-     * 일반 예외 처리 핸들러
+     * 유효성 검사 실패 핸들러 (DTO @Valid 실패 등)
      *
-     * 예상하지 못한 예외가 발생한 경우 500 에러로 응답한다.
+     * @param ex MethodArgumentNotValidException
+     * @return ErrorResponse
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMsg = ex.getBindingResult().getFieldError().getDefaultMessage();
+        log.warn("유효성 검사 실패: {}", errorMsg);
+        return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.VALIDATION_FAIL, errorMsg));
+    }
+
+    /**
+     * 인가 실패 핸들러 (보안상 접근 권한 없음)
+     *
+     * @param ex AccessDeniedException
+     * @return ErrorResponse
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("접근 거부: {}", ex.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.FORBIDDEN.getStatus())
+                .body(ErrorResponse.of(ErrorCode.FORBIDDEN));
+    }
+
+    /**
+     * 예상치 못한 서버 내부 예외 처리 핸들러
      *
      * @param ex Exception
-     * @return ResponseEntity<ErrorResponse>
+     * @return ErrorResponse
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex) {
+        log.error("서버 내부 오류 발생", ex);
         return ResponseEntity
                 .internalServerError()
-                .body(ErrorResponse.of(500, "서버 오류가 발생했습니다: " + ex.getMessage()));
+                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }

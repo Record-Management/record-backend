@@ -1,32 +1,26 @@
 package com.recordmanagement.habitlog.config.exception;
 
+import lombok.Getter;
+
 /**
- * CustomException - 커스텀 예외 클래스
+ * CustomException - 비즈니스 로직 전용 커스텀 예외 클래스
  *
- * 비즈니스 로직에서 발생 가능한 예외를 커스텀으로 정의하고,
- * HTTP 상태 코드와 메시지를 함께 전달할 수 있도록 한다.
+ * ErrorCode를 통해 HTTP 상태, 에러 코드, 메시지를 일관되게 관리하며
+ * 서비스 및 도메인 계층에서 발생하는 비즈니스 예외를 명확히 표현한다.
  */
+@Getter
 public class CustomException extends RuntimeException {
 
-    private final int status;
+    /** 에러 코드 객체 */
+    private final ErrorCode errorCode;
 
     /**
-     * 상태 코드와 메시지를 포함한 예외 객체 생성자
+     * CustomException 생성자
      *
-     * @param message 예외 메시지
-     * @param status  HTTP 상태 코드 (예: 400, 404, 500 등)
+     * @param errorCode 발생한 에러 코드
      */
-    public CustomException(String message, int status) {
-        super(message);
-        this.status = status;
-    }
-
-    /**
-     * 상태 코드 반환
-     *
-     * @return int status
-     */
-    public int getStatus() {
-        return status;
+    public CustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 }
