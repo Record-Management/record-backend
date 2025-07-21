@@ -1,11 +1,11 @@
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT:8082}
 
 spring:
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -18,18 +18,26 @@ spring:
         use_sql_comments: ${DB_USE_SQL_COMMENTS:true}
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+  paths-to-exclude:
+    - /actuator/**
+    - /error
 
 logging:
   level:
     org.hibernate.SQL: ${LOG_LEVEL_SQL:INFO}
     org.hibernate.type.descriptor.sql: ${LOG_LEVEL_TYPE:INFO}
     org.springframework.web: ${LOG_LEVEL_WEB:INFO}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
