@@ -1,5 +1,5 @@
 # 1단계: Build stage
-FROM gradle:8.4.0-jdk17-alpine AS builder
+FROM gradle:8.4.0-jdk17 AS builder
 WORKDIR /app
 
 # Gradle 캐시를 재사용하기 위해 gradle 관련 파일 먼저 복사
