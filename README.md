@@ -5,15 +5,17 @@
 
 ## 기술 스택
 - Java 17  
-- Spring Boot 3.5.0
-- Spring Security + JWT 
+- Spring Boot 3.4.5
 - Spring Data JPA  
-- MySQL  
-- Firebase Admin SDK 
+- MySQL
+- Flyway(DB 마이그레이션)
+- Spring Security + JWT 
+- Firebase Admin SDK
 - Swagger(springdoc-openapi 2.8.9)
-- Gradle 8.x  
 - JUnit 5 + Spring Boot Test  
-- AWS EC2 + Docker 컨테이너 배포
+- Gradle 8.x  
+- Docker + AWS EC2 배포
+- Jenkins(CI/CD)
 
 
 ## 환경 설정
