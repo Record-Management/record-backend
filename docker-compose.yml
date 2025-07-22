@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mysql:8
+    image: mysql:8.0
     container_name: habitlog-db
     restart: always
     env_file:
