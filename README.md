@@ -19,7 +19,7 @@
 
 
 ## 환경 설정
-- MySQL 8 이상 (Docker 컨테이너 포함)  
+- MySQL 8.0 (Docker 컨테이너 포함)  
 - Firebase 서비스 계정 키(`src/main/resources/firebase-service-account.json`)  
 
 ## 실행 방법
